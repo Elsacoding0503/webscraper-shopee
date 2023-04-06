@@ -1,7 +1,7 @@
 # shopee_居家生活
 import requests
 import pandas as pd
-import time
+import time, random
 from bs4 import  BeautifulSoup as bs
 import json
 from fake_useragent import UserAgent 
