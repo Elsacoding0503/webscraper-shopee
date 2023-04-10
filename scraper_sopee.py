@@ -2,14 +2,9 @@
 import requests
 import pandas as pd
 import time, random
-from bs4 import  BeautifulSoup as bs
 import json
 from fake_useragent import UserAgent 
 
-dict_of_products={}
-name = []
-price_min = []
-price_max = []
 product_reviews = []
 
 for page in (0,60,120):
@@ -18,28 +13,17 @@ for page in (0,60,120):
     products = response_shopee.json()
 
     for i in products['data']['sections'][0]['data']['item']:
-        name.append(i['name'])
-        price_min.append(i['price_min']/100000)
-        price_max.append(i['price_max']/100000)
         itemid = i['itemid']
         shopid = i['shopid']
+        #爬六筆評價
         sub_response = requests.get(f'https://shopee.tw/api/v2/item/get_ratings?filter=0&flag=1&itemid={itemid}&limit=6&offset=0&shopid={shopid}&type=0')        
         reviews = sub_response.json()
         
-        list_of_reviews=[]
         for review in reviews['data']['ratings']:
-            list_of_reviews.append(review['comment'])
-        product_reviews.append(list_of_reviews)
-        time.sleep(random.uniform(1,4))
-    time.sleep(random.uniform(3,5))
-        
-        
-        
-dict_of_products['name']=name
-dict_of_products['price_min']=price_min
-dict_of_products['price_max']=price_max
-dict_of_products['reviews']=product_reviews
+            product_reviews.append((i['name'], i['price_min']/100000, i['price_max']/100000, review['comment']))
+        time.sleep(random.uniform(1,2))
+    time.sleep(random.uniform(1,3))
 
-
-product_all = pd.DataFrame(dict_of_products)
+product_all = pd.DataFrame(product_reviews, columns=['product_name', 'price_min','price_max','reviews'])
 product_all.to_excel('shopee.xlsx', sheet_name='居家生活',index=False, encoding='utf8')
+# print(product_all)
