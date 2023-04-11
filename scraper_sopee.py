@@ -27,6 +27,7 @@ for page in (0,60,120):
 
 product_all = pd.DataFrame(product_reviews, columns=['product_name', 'price_min','price_max','reviews'])
 
+
 # 多字元清洗
 symbols = ['【', '】']
 product_all['product_name'] = product_all['product_name'].replace(dict.fromkeys(symbols, ''), regex=True)
@@ -61,8 +62,6 @@ emoji_pattern = re.compile(
 
 product_all['product_name'] = product_all['product_name'].str. replace(emoji_pattern, '')
 product_all['reviews'] = product_all['reviews'].str. replace(emoji_pattern, '')
-product_all.to_excel('shopee_clean.xlsx', sheet_name='居家生活',index=False, encoding='utf8')
-
 
 product_all.to_excel('shopee_clean.xlsx', sheet_name='居家生活',index=False, encoding='utf8')
 # print(product_all)
