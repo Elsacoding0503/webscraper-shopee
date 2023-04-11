@@ -4,6 +4,7 @@ import pandas as pd
 import time, random
 import json
 from fake_useragent import UserAgent 
+import re
 
 product_reviews = []
 
@@ -25,5 +26,43 @@ for page in (0,60,120):
     time.sleep(random.uniform(1,3))
 
 product_all = pd.DataFrame(product_reviews, columns=['product_name', 'price_min','price_max','reviews'])
-product_all.to_excel('shopee.xlsx', sheet_name='居家生活',index=False, encoding='utf8')
+
+# 多字元清洗
+symbols = ['【', '】']
+product_all['product_name'] = product_all['product_name'].replace(dict.fromkeys(symbols, ''), regex=True)
+
+# emoji 清洗
+emoji_pattern = re.compile(
+    "(["
+
+    "\U0001F1E0-\U0001F1FF" # flags (iOS)
+
+    "\U0001F300-\U0001F5FF" # symbols & pictographs
+
+    "\U0001F600-\U0001F64F" # emoticons
+
+    "\U0001F680-\U0001F6FF" # transport & map symbols
+
+    "\U0001F700-\U0001F77F" # alchemical symbols
+
+    "\U0001F780-\U0001F7FF" # Geometric Shapes Extended
+
+    "\U0001F800-\U0001F8FF" # Supplemental Arrows-C
+
+    "\U0001F900-\U0001F9FF" # Supplemental Symbols and Pictographs
+
+    "\U0001FA00-\U0001FA6F" # Chess Symbols
+
+    "\U0001FA70-\U0001FAFF" # Symbols and Pictographs Extended-A
+
+    "\U00002702-\U000027B0" # Dingbats
+
+    "])")
+
+product_all['product_name'] = product_all['product_name'].str. replace(emoji_pattern, '')
+product_all['reviews'] = product_all['reviews'].str. replace(emoji_pattern, '')
+product_all.to_excel('shopee_clean.xlsx', sheet_name='居家生活',index=False, encoding='utf8')
+
+
+product_all.to_excel('shopee_clean.xlsx', sheet_name='居家生活',index=False, encoding='utf8')
 # print(product_all)
